@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const cors = require('cors');
+require('dotenv').config();
 
 const session = require("express-session");
 const { UserModel } = require("../model/user.model");
@@ -10,6 +11,7 @@ const { blacklistModel } = require("../model/blacklist.model");
 const { auth } = require("../middleware/auth");
 const userRouter = express.Router();
 userRouter.use(cors());
+
 userRouter.post("/register", async (req, res) => {
   try {
     const { name, email, password, bio, phone, image } = req.body;
@@ -134,7 +136,7 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 userRouter.use(
   session({
-    secret: "your_secret_key",
+    secret: "your",
     resave: false,
     saveUninitialized: true,
   })
@@ -152,8 +154,8 @@ passport.use(
   new GoogleStrategy(
     {
       clientID:
-        "369950360903-22k8h87kgvgtbm2593n73nsc53vfevni.apps.googleusercontent.com",
-        clientSecret: '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',
+        `${process.env.clientID}`,
+        clientSecret: `${process.env.clientSecret}`,
       callbackURL: "http://localhost:8080/auth/google/callback",
     },
     async (accessToken, refreshToken, params, profile, done) => {
