@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      table {
+        font-family: arial, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      td,
+      th {
+        border: 1px solid #dddddd;
+        text-align: left;
+        padding: 8px;
+      }
+
+      tr:nth-child(even) {
+        background-color: #dddddd;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Employee Management System</h2>
+
+    <button onclick="openAddEmployeeForm()">Add Employee</button>
+    <button onclick="logout()">Logout</button>
+    <hr />
+
+    <table>
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email</th>
+          <th>Salary</th>
+          <th>Date</th>
+          <th>Department</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="addEmployeeForm" style="display: none">
+      <h3>Add Employee</h3>
+      <!-- Form for adding employee -->
+      <form id="employeeForm">
+        <!-- Input fields for employee details -->
+        <input type="text" id="firstName" placeholder="First Name" />
+        <input type="text" id="lastName" placeholder="Last Name" />
+        <input type="email" id="email" placeholder="Email" />
+        <input type="text" id="department" placeholder="Department" />
+        <input type="number" id="salary" placeholder="Salary" />
+        <!-- Button to submit form -->
+        <button type="submit">Add Employee</button>
+      </form>
+    </div>
+
+    <script>
+      const table = document.querySelector("table tbody");
+
+      async function getEmployees() {
+        try {
+          const response = await fetch(
+            "https://all-backend-servers.onrender.com/employee",
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
+            }
+          );
+          const data = await response.json();
+          console.log(data);
+          table.innerHTML = "";
+          data.employees.forEach((employee, index) => {
+            const row = document.createElement("tr");
+            row.id = employee._id; // Set the ID of the row to the employee ID
+            row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${employee.first_name}</td>
+          <td>${employee.last_name}</td>
+          <td>${employee.email}</td>
+          <td>${employee.salary}</td>
+          <td>${employee.date}</td>
+          <td>${employee.department}</td>
+          <td>
+            <button>Edit</button>
+            <button>Delete</button>
+          </td>
+        `;
+            table.appendChild(row);
+          });
+        } catch (err) {
+          console.log(err);
+        }
+      }
+      getEmployees();
+
+      async function logout() {
+        try {
+          const response = await fetch(
+            "https://all-backend-servers.onrender.com/users/logout",
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
+            }
+          );
+          const data = await response.json();
+          console.log(data);
+          localStorage.removeItem("token");
+          window.location.href = "index.html";
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      function openAddEmployeeForm() {
+        document.getElementById("addEmployeeForm").style.display = "block";
+      }
+
+      async function addEmployee(event) {
+        event.preventDefault();
+
+        const firstName = document.getElementById("firstName").value;
+        const lastName = document.getElementById("lastName").value;
+        const email = document.getElementById("email").value;
+        const department = document.getElementById("department").value;
+        const salary = document.getElementById("salary").value;
+
+        try {
+          const response = await fetch(
+            "https://all-backend-servers.onrender.com/employee",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
+              body: JSON.stringify({
+                first_name: firstName,
+                last_name: lastName,
+                email: email,
+                department: department,
+                salary: salary,
+              }),
+            }
+          );
+          const data = await response.json();
+          console.log(data);
+          document.getElementById("employeeForm").reset();
+
+          document.getElementById("addEmployeeForm").style.display = "none";
+          getEmployees();
+        } catch (err) {
+          console.error("Error adding employee:", err);
+        }
+      }
+
+      document
+        .getElementById("employeeForm")
+        .addEventListener("submit", addEmployee);
+
+      async function deleteEmployee(employeeId) {
+        try {
+          const response = await fetch(
+            `https://all-backend-servers.onrender.com/employee/${employeeId}`,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
+            }
+          );
+          if (response.status === 200) {
+            const row = document.getElementById(employeeId);
+            row.parentNode.removeChild(row);
+            console.log("Employee deleted successfully.");
+            getEmployees();
+          } else {
+            console.error(
+              "Failed to delete employee. Status:",
+              response.status
+            );
+          }
+        } catch (err) {
+          console.error("Error deleting employee:", err);
+        }
+      }
+
+      table.addEventListener("click", async (event) => {
+        if (
+          event.target.tagName === "BUTTON" &&
+          event.target.textContent === "Delete"
+        ) {
+          const employeeId = event.target.parentNode.parentNode.id;
+          console.log(employeeId);
+          if (confirm("Are you sure you want to delete this employee?")) {
+            deleteEmployee(employeeId);
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

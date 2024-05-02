@@ -1,0 +1,75 @@
+body{
+    min-height: 100vh;
+
+}
+
+.main{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 30px;
+}
+
+.details{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 600px;
+    border: 1px solid gray;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.det{
+    display: flex;
+    gap:20%;
+}
+
+img{
+    height: 50px;
+}
+
+.opt{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.opt>button{
+    border: 1px solid gray;
+    padding: 10px 20px;
+    color: gray;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+
+
+i{
+    cursor: pointer;
+}
+
+.editter{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.editter>input{
+    padding: 20px;
+}
+
+.editter>button{
+    width: 40%;
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+    background-color: blue;
+    cursor: pointer;
+}
+
+.hid{
+    display:none;
+}

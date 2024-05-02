@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const cors = require('cors');
+const path = require("path");
 require('dotenv').config();
 
 const session = require("express-session");
@@ -11,6 +12,9 @@ const { blacklistModel } = require("../model/blacklist.model");
 const { auth } = require("../middleware/auth");
 const userRouter = express.Router();
 userRouter.use(cors());
+
+const frontendPath = path.join(__dirname, "../../frontend");
+userRouter.use(express.static(frontendPath));
 
 userRouter.post("/register", async (req, res) => {
   try {
@@ -185,7 +189,7 @@ userRouter.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
   (req, res) => {
-    res.redirect("/getProfile");
+    res.redirect("/profile.html");
   }
 );
 
