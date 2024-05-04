@@ -3,6 +3,11 @@
   <head>
     <title>Employee Dashboard</title>
     <link rel="stylesheet" href="empdash.css" />
+    <script>
+      if (!localStorage.getItem("token")) {
+        window.location.href = "index.html";
+      }
+    </script>
   </head>
   <body>
     <h2 id="heading">Employees Dashboard</h2>
