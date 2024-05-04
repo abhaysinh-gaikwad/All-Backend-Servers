@@ -96,11 +96,21 @@ async function login() {
     console.log(userName);
     localStorage.setItem("userName", userName);
 
+
     
     const data = await response.json();
 
     const token = data.token;
     
+    if (response.ok) {
+      const toast = document.getElementById("toast");
+      toast.classList.remove("hide");
+      toast.innerText = data.msg;
+      setTimeout(() => {
+        toast.classList.add("hide");
+      }, 2000);
+    }
+
     localStorage.setItem("token", token);
     setTimeout(() => {
       window.location.href = "empDashbord.html";
