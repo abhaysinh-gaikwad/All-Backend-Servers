@@ -27,6 +27,15 @@ const signupBtn = document.getElementById("signup-btn");
 
 async function signup() {
   try {
+    const pass = passwordSignup.value;
+    const repass = repasswordSignup.value;
+    if (pass !== repass) {
+      const toast = document.getElementById("toast");
+      toast.classList.remove("hide");
+      toast.innerText = "confirm password  does not match";
+      toast.style.background = "red";
+      return;
+    }
     const response = await fetch(
       "https://all-backend-servers.onrender.com/users/signup",
       {
@@ -43,9 +52,32 @@ async function signup() {
     );
     const data = await response.json();
     console.log(data);
+    if (response.ok) {
+      const toast = document.getElementById("toast");
+      toast.classList.remove("hide");
+      if(data.msg=='user created'){
+        toast.innerText = 'Successfully signed up kindly login';
+      }else {
+        toast.innerText = data.msg;
+      }
+      setTimeout(() => {
+        toast.classList.add("hide");
+        toggleLogin();
+      }, 2000);
+    }
+
+    
   } catch (err) {
     console.log(err);
   }
+}
+
+function extractName(email) {
+  const cleanedEmail = email.replace(/\d/g, '');
+  const atIndex = cleanedEmail.indexOf("@");
+  const userName = cleanedEmail.substring(0, atIndex);
+  const formattedName = userName.charAt(0).toUpperCase() + userName.slice(1).toLowerCase();
+  return formattedName;
 }
 
 async function login() {
@@ -61,11 +93,19 @@ async function login() {
       }),
     });
 
-    const data = await response.json();
-    const token = data.token;
+    const userName = extractName(emailLogin.value);
+    console.log(userName);
+    localStorage.setItem("userName", userName);
 
+    
+    const data = await response.json();
+
+    const token = data.token;
+    
     localStorage.setItem("token", token);
-    window.location.href = "empDashbord.html";
+    setTimeout(() => {
+      window.location.href = "empDashbord.html";
+    }, 1000);
     console.log(data);
   } catch (err) {
     console.log(err);

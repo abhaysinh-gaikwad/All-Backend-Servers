@@ -196,3 +196,21 @@ h1 {
   color: #333;
   font-size: 28px;
 }
+
+#toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #57b846;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  transition: opacity 0.5s ease;
+}
+
+.hide {
+  opacity: 0;
+  visibility: hidden;
+}
