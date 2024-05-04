@@ -102,7 +102,7 @@ async function login() {
 
     const token = data.token;
     
-    if (response.ok) {
+    if (data) {
       const toast = document.getElementById("toast");
       toast.classList.remove("hide");
       toast.innerText = data.msg;
