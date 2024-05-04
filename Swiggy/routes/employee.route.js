@@ -56,6 +56,15 @@ employeeRouter.get("/", auth, async (req, res) => {
     }
 });
 
+employeeRouter.get("/:id", auth, async (req, res) => {
+    try {
+        const employee = await EmployeeModel.findById(req.params.id);
+        res.status(200).send({ msg: "employee fetched", employee });
+    } catch (err) {
+        console.log(err);
+        res.status(400).send({ Error: "Error occurred while fetching employee" });
+    }
+})
 
 employeeRouter.patch("/:id",auth, async (req, res) => {
     try {
