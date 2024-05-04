@@ -2,30 +2,122 @@
 <html>
   <head>
     <style>
-      table {
-        font-family: arial, sans-serif;
-        border-collapse: collapse;
-        width: 100%;
+      @import url("https://fonts.googleapis.com/css?family=Montserrat|Quicksand");
+
+      * {
+        font-family: "quicksand", Arial, Helvetica, sans-serif;
+        box-sizing: border-box;
+      }
+      body {
+        background: #f0f0f0;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
 
-      td,
-      th {
-        border: 1px solid #dddddd;
+      h2 {
+        text-align: center;
+        color: #333;
+        margin-top: 20px;
+      }
+
+      button {
+        cursor: pointer;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #57b846;
+        color: #fff;
+        font-size: 16px;
+        margin: 10px;
+        transition: background-color 0.3s ease;
+      }
+
+      .active {
+        background-color: #57b846;
+        color: black;
+        border: 2px solid black;
+      }
+      button:hover {
+        background-color: #3d8e3d;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+        background-color: #fff;
+      }
+
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 10px;
         text-align: left;
+      }
+
+      th {
+        text-align: center;
+        background-color: #f2f2f2;
         padding: 8px;
+        font-size: 14px;
       }
 
       tr:nth-child(even) {
-        background-color: #dddddd;
+        background-color: #f9f9f9;
+      }
+
+      #employeeFormContainer {
+        display: none;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+      }
+
+      #formTitle {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      input[type="text"],
+      input[type="email"],
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-sizing: border-box;
+      }
+
+      #submitBtn {
+        background-color: #57b846;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      #submitBtn:hover {
+        background-color: #3d8e3d;
+      }
+      #paginationButtons {
+        display: flex;
+        justify-content: center;
       }
     </style>
   </head>
   <body>
     <h2>Employee Management System</h2>
-
-    <button onclick="openAddEmployeeForm()">Add Employee</button>
+    <button onclick="openEmployeeForm()">Add Employee</button>
     <button onclick="logout()">Logout</button>
-    <hr />
 
     <table>
       <thead>
@@ -34,76 +126,170 @@
           <th>First Name</th>
           <th>Last Name</th>
           <th>Email</th>
-          <th>Salary</th>
-          <th>Date</th>
-          <th>Department</th>
+          <th>
+            Salary
+            <select
+              id="sortSalaryOrderSelect"
+              onchange="sortEmployees('salary')"
+            >
+              <option value="">Sort by</option>
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </th>
+          <th>
+            Date
+            <select id="sortDateOrderSelect" onchange="sortEmployees('date')">
+              <option value="asc">Sort by</option>
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+            </select>
+          </th>
+          <th>
+            Department
+            <select
+              id="departmentSelect"
+              onchange="filterEmployeesByDepartment()"
+            >
+              <option value="">All Departments</option>
+              <option value="Tech">Tech</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Operations">Operations</option>
+            </select>
+          </th>
           <th>Actions</th>
         </tr>
       </thead>
-      <tbody></tbody>
+      <tbody id="employeeTableBody"></tbody>
     </table>
+    <div id="paginationButtons"></div>
 
-    <div id="addEmployeeForm" style="display: none">
-      <h3>Add Employee</h3>
-      <!-- Form for adding employee -->
-      <form id="employeeForm">
-        <!-- Input fields for employee details -->
-        <input type="text" id="firstName" placeholder="First Name" />
-        <input type="text" id="lastName" placeholder="Last Name" />
-        <input type="email" id="email" placeholder="Email" />
-        <input type="text" id="department" placeholder="Department" />
-        <input type="number" id="salary" placeholder="Salary" />
-        <!-- Button to submit form -->
-        <button type="submit">Add Employee</button>
+    <div id="employeeFormContainer">
+      <h3 id="formTitle">Add Employee</h3>
+      <form id="employeeForm" onsubmit="submitEmployeeForm(event)">
+        <input type="hidden" id="employeeId" />
+        <input type="text" id="firstName" placeholder="First Name" required />
+        <input type="text" id="lastName" placeholder="Last Name" required />
+        <input type="email" id="email" placeholder="Email" required />
+        <select id="department" required>
+          <option value="" disabled selected>Select Department</option>
+          <option value="Tech">Tech</option>
+          <option value="Marketing">Marketing</option>
+          <option value="Operations">Operations</option>
+        </select>
+        <input type="number" id="salary" placeholder="Salary" required />
+        <button type="submit" id="submitBtn">Add Employee</button>
+        <button type="button" onclick="cancelEdit()">Cancel</button>
       </form>
     </div>
 
     <script>
       const table = document.querySelector("table tbody");
+      const tableBody = document.getElementById("employeeTableBody");
+      const paginationButtonsContainer =
+        document.getElementById("paginationButtons");
+      const employeeFormContainer = document.getElementById(
+        "employeeFormContainer"
+      );
+      const formTitle = document.getElementById("formTitle");
+      const submitBtn = document.getElementById("submitBtn");
+      const employeeIdInput = document.getElementById("employeeId");
+      const employeeForm = document.getElementById("employeeForm");
 
-      async function getEmployees() {
+      async function getEmployees(
+        page = 1,
+        department = "",
+        sortBy = "date",
+        sortOrder = "asc",
+        searchName = ""
+      ) {
         try {
-          const response = await fetch(
-            "https://all-backend-servers.onrender.com/employee",
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + localStorage.getItem("token"),
-              },
-            }
-          );
+          const url = new URL("https://all-backend-servers.onrender.com/employee");
+          url.searchParams.append("page", page);
+          if (department) url.searchParams.append("department", department);
+          if (sortBy) url.searchParams.append("sortBy", sortBy);
+          if (sortOrder) url.searchParams.append("sortOrder", sortOrder);
+          if (searchName) url.searchParams.append("searchName", searchName);
+
+          const response = await fetch(url, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          });
           const data = await response.json();
           console.log(data);
-          table.innerHTML = "";
-          data.employees.forEach((employee, index) => {
-            const row = document.createElement("tr");
-            row.id = employee._id; // Set the ID of the row to the employee ID
-            row.innerHTML = `
+          renderEmployees(data.employees);
+          createPaginationButtons(data.totalPages, page);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      function renderEmployees(employees) {
+        tableBody.innerHTML = "";
+        employees.forEach((employee, index) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
           <td>${index + 1}</td>
           <td>${employee.first_name}</td>
           <td>${employee.last_name}</td>
           <td>${employee.email}</td>
           <td>${employee.salary}</td>
-          <td>${employee.date}</td>
+          <td>${new Date(employee.date).toLocaleDateString()}</td>
           <td>${employee.department}</td>
           <td>
-            <button>Edit</button>
-            <button>Delete</button>
+            <button onclick="openEditEmployeeForm('${
+              employee._id
+            }')">Edit</button>
+            <button onclick="deleteEmployee('${employee._id}')">Delete</button>
           </td>
-        `;
-            table.appendChild(row);
+    `;
+          tableBody.appendChild(row);
+        });
+      }
+
+      function createPaginationButtons(totalPages, currentPage) {
+        paginationButtonsContainer.innerHTML = "";
+        for (let i = 1; i <= totalPages; i++) {
+          const button = document.createElement("button");
+          button.textContent = i;
+          if (i === currentPage) {
+            button.disabled = true;
+            button.classList.add("active");
+          }
+          button.addEventListener("click", () => {
+            getEmployees(i);
           });
-        } catch (err) {
-          console.log(err);
+          paginationButtonsContainer.appendChild(button);
         }
       }
-      getEmployees();
 
-      async function logout() {
+      async function sortEmployees(sortBy) {
+        const sortOrder = document.getElementById(
+          `sort${sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}OrderSelect`
+        ).value;
+        getEmployees(1, "", sortBy, sortOrder);
+      }
+
+      async function filterEmployeesByDepartment() {
+        const selectedDepartment =
+          document.getElementById("departmentSelect").value;
+        getEmployees(1, selectedDepartment);
+      }
+
+      async function openEmployeeForm() {
+        employeeForm.reset();
+        formTitle.textContent = "Add Employee";
+        submitBtn.textContent = "Add Employee";
+        employeeFormContainer.style.display = "block";
+      }
+
+      async function openEditEmployeeForm(employeeId) {
         try {
           const response = await fetch(
-            "https://all-backend-servers.onrender.com/users/logout",
+            `https://all-backend-servers.onrender.com/employee/${employeeId}`,
             {
               method: "GET",
               headers: {
@@ -113,59 +299,109 @@
             }
           );
           const data = await response.json();
-          console.log(data);
-          localStorage.removeItem("token");
-          window.location.href = "index.html";
+          if (data && data.employee) {
+            const employee = data.employee;
+            console.log(employee);
+
+            employeeIdInput.value = employee._id;
+            document.getElementById("firstName").value = employee.first_name;
+            document.getElementById("lastName").value = employee.last_name;
+            document.getElementById("email").value = employee.email;
+            document.getElementById("department").value = employee.department;
+            document.getElementById("salary").value = employee.salary;
+
+            formTitle.textContent = "Edit Employee";
+            submitBtn.textContent = "Update Employee";
+
+            employeeFormContainer.style.display = "block";
+
+            employeeForm.onsubmit = async (event) => {
+              event.preventDefault();
+              const firstName = document.getElementById("firstName").value;
+              const lastName = document.getElementById("lastName").value;
+              const email = document.getElementById("email").value;
+              const department = document.getElementById("department").value;
+              const salary = document.getElementById("salary").value;
+              const employeeId = document.getElementById("employeeId").value;
+
+              try {
+                const url = `https://all-backend-servers.onrender.com/employee/${employeeId}`;
+                const body = JSON.stringify({
+                  first_name: firstName,
+                  last_name: lastName,
+                  email,
+                  department,
+                  salary,
+                });
+                const response = await fetch(url, {
+                  method: "PATCH",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + localStorage.getItem("token"),
+                  },
+                  body,
+                });
+                const data = await response.json();
+                console.log(data);
+                employeeFormContainer.style.display = "none";
+                getEmployees();
+              } catch (err) {
+                console.error("Error updating employee:", err);
+              }
+            };
+          } else {
+            console.log("Employee not found.");
+          }
         } catch (err) {
-          console.log(err);
+          console.error("Error fetching employee details:", err);
         }
       }
 
-      function openAddEmployeeForm() {
-        document.getElementById("addEmployeeForm").style.display = "block";
-      }
-
-      async function addEmployee(event) {
+      function submitEmployeeForm(event) {
         event.preventDefault();
-
         const firstName = document.getElementById("firstName").value;
         const lastName = document.getElementById("lastName").value;
         const email = document.getElementById("email").value;
         const department = document.getElementById("department").value;
         const salary = document.getElementById("salary").value;
 
-        try {
-          const response = await fetch(
-            "https://all-backend-servers.onrender.com/employee",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: "Bearer " + localStorage.getItem("token"),
-              },
-              body: JSON.stringify({
-                first_name: firstName,
-                last_name: lastName,
-                email: email,
-                department: department,
-                salary: salary,
-              }),
-            }
-          );
-          const data = await response.json();
-          console.log(data);
-          document.getElementById("employeeForm").reset();
+        const formData = {
+          first_name: firstName,
+          last_name: lastName,
+          email: email,
+          department: department,
+          salary: salary,
+        };
 
-          document.getElementById("addEmployeeForm").style.display = "none";
-          getEmployees();
-        } catch (err) {
-          console.error("Error adding employee:", err);
-        }
+        addEmployee(formData);
       }
 
-      document
-        .getElementById("employeeForm")
-        .addEventListener("submit", addEmployee);
+      async function addEmployee(formData) {
+        try {
+          const response = await fetch("https://all-backend-servers.onrender.com/employee", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+            body: JSON.stringify(formData),
+          });
+          if (response.ok) {
+            console.log("Employee added successfully.");
+
+            document.getElementById("employeeForm").reset();
+
+            document.getElementById("employeeFormContainer").style.display =
+              "none";
+
+            getEmployees();
+          } else {
+            console.error("Failed to add employee. Status:", response.status);
+          }
+        } catch (error) {
+          console.error("Error adding employee:", error);
+        }
+      }
 
       async function deleteEmployee(employeeId) {
         try {
@@ -180,8 +416,6 @@
             }
           );
           if (response.status === 200) {
-            const row = document.getElementById(employeeId);
-            row.parentNode.removeChild(row);
             console.log("Employee deleted successfully.");
             getEmployees();
           } else {
@@ -195,18 +429,48 @@
         }
       }
 
-      table.addEventListener("click", async (event) => {
-        if (
-          event.target.tagName === "BUTTON" &&
-          event.target.textContent === "Delete"
-        ) {
-          const employeeId = event.target.parentNode.parentNode.id;
-          console.log(employeeId);
-          if (confirm("Are you sure you want to delete this employee?")) {
-            deleteEmployee(employeeId);
-          }
+      async function fetchEmployee(employeeId) {
+        try {
+          const response = await fetch(
+            `https://all-backend-servers.onrender.com/employee/${employeeId}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: "Bearer " + localStorage.getItem("token"),
+              },
+            }
+          );
+          return await response.json();
+        } catch (err) {
+          console.error("Error fetching employee:", err);
+          return null;
         }
-      });
+      }
+
+      async function logout() {
+        try {
+          const response = await fetch("https://all-backend-servers.onrender.com/users/logout", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          });
+          const data = await response.json();
+          console.log(data);
+          localStorage.removeItem("token");
+          window.location.href = "index.html";
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      function cancelEdit() {
+        employeeFormContainer.style.display = "none";
+      }
+
+      getEmployees();
     </script>
   </body>
 </html>

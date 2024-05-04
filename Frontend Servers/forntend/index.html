@@ -1,40 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Employee Management System</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h1>Welcome to Employee Management System</h1>
     <div class="form-modal">
-    
-        <div class="form-toggle">
-            <button id="login-toggle" onclick="toggleLogin()">log in</button>
-            <button id="signup-toggle" onclick="toggleSignup()">sign up</button>
-        </div>
-    
-        <div id="login-form">
-            <form>
-                <input id="email-login" type="text" placeholder="Enter email or username"/>
-                <input id="password-login" type="password" placeholder="Enter password"/>
-                <button id="login-btn" type="button" class="btn login">login</button>
-           
-            </form>
-        </div>
-    
-        <div id="signup-form">
-            <form>
-                <input id="email-signup" type="email" placeholder="Enter your email"/>
-                <input id="password-signup" type="password" placeholder="Enter password"/>
-                <input id="repassword-signup" type="password" placeholder="Re-enter password"/>
-                <button id="signup-btn" type="button" class="btn signup">create account</button>
-
-            </form>
-        </div>
-    
+      <div class="form-toggle">
+        <button id="login-toggle" onclick="toggleLogin()">log in</button>
+        <button id="signup-toggle" onclick="toggleSignup()">sign up</button>
+      </div>
+      <div id="login-form">
+        <form>
+          <input
+            id="email-login"
+            type="text"
+            placeholder="Enter email or username"
+          />
+          <input
+            id="password-login"
+            type="password"
+            placeholder="Enter password"
+          />
+          <button id="login-btn" type="button" class="btn login">login</button>
+        </form>
+      </div>
+      <div id="signup-form">
+        <form>
+          <input
+            id="email-signup"
+            type="email"
+            placeholder="Enter your email"
+          />
+          <input
+            id="password-signup"
+            type="password"
+            placeholder="Enter password"
+          />
+          <input
+            id="repassword-signup"
+            type="password"
+            placeholder="Re-enter password"
+          />
+          <button id="signup-btn" type="button" class="btn signup">
+            create account
+          </button>
+        </form>
+      </div>
     </div>
-    
-</body>
-<script src="script.js"></script>
+    <script src="script.js"></script>
+  </body>
 </html>
