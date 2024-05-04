@@ -33,7 +33,6 @@ async function signup() {
       const toast = document.getElementById("toast");
       toast.classList.remove("hide");
       toast.innerText = "confirm password  does not match";
-      toast.style.background = "red";
       return;
     }
     const response = await fetch(
