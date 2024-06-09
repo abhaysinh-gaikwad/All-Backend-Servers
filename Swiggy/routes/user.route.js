@@ -112,8 +112,8 @@ userRouter.post("/login", async (req, res) => {
     if (user) {
       bcrypt.compare(password, user.password, (err, result) => {
         if (result) {
-          const token = jwt.sign({ userId: user._id }, "secret", { expiresIn: "3d" });
-          const refreshToken = jwt.sign({ userId: user._id }, "secret", { expiresIn: "24h" });
+          const token = jwt.sign({ userId: user._id }, "abhay", { expiresIn: "3d" });
+          const refreshToken = jwt.sign({ userId: user._id }, "abhay", { expiresIn: "24h" });
           res.status(201).send({ msg: "Login successful", token, refreshToken });
         } else {
           res.status(501).send({ msg: "Wrong password" });

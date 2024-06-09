@@ -1,0 +1,148 @@
+@import url("https://fonts.googleapis.com/css?family=Montserrat|Quicksand");
+
+* {
+  font-family: "quicksand", Arial, Helvetica, sans-serif;
+  box-sizing: border-box;
+}
+body {
+  background: #f0f0f0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+h2 {
+  text-align: center;
+  color: #333;
+  margin-top: 20px;
+}
+
+button {
+  cursor: pointer;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #57b846;
+  color: #fff;
+  font-size: 16px;
+  margin: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.active {
+  background-color: #57b846;
+  color: black;
+  border: 2px solid black;
+}
+button:hover {
+  background-color: #3d8e3d;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background-color: #fff;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: left;
+}
+
+th {
+  text-align: center;
+  background-color: #f2f2f2;
+  padding: 8px;
+  font-size: 14px;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+#employeeFormContainer {
+  display: none;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+}
+
+#formTitle {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="number"],
+select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+#submitBtn {
+  background-color: #57b846;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+#submitBtn:hover {
+  background-color: #3d8e3d;
+}
+#paginationButtons {
+  display: flex;
+  justify-content: center;
+}
+
+#heading span {
+  color: #57b846;
+}
+
+#toast {
+  position: fixed;
+  /* bottom: 20px; */
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #57b846;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  transition: opacity 0.3s ease;
+}
+
+#toast.hide {
+  opacity: 0;
+  visibility: hidden;
+}
+#editToast {
+  position: fixed;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #3d8e3d;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  transition: opacity 0.3s ease;
+}
+
+#editToast.hide {
+  opacity: 0;
+  visibility: hidden;
+}
